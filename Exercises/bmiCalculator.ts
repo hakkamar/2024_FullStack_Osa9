@@ -1,6 +1,6 @@
 import { parseArguments } from "./utils";
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
   if (height < 40) {
     throw new Error("Minimum height 40 cm");
   }
@@ -28,6 +28,8 @@ const calculateBmi = (height: number, weight: number): string => {
       return "Obese (Class II)";
     case bmi >= 40:
       return "Obese (Class III)";
+    default:
+      return "malformatted parameters";
   }
 };
 
