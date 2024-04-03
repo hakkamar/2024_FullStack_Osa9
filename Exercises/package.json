@@ -2,7 +2,7 @@
   "name": "exercises",
   "version": "1.0.0",
   "description": "Osa9 (b) TypeScript harjoituksia",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "ts-node index.ts",
     "dev": "ts-node-dev index.ts",
@@ -11,12 +11,16 @@
     "calculate": "ts-node calculator.ts",
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .ts ."
   },
   "author": "Marko \"Hakkis\" Hakkarainen",
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint": "^8.57.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.3"

@@ -6,17 +6,18 @@ interface MultiplyValues {
 //type StringOrNumber = number[] | string[];
 
 export const parseManyArguments = (args: string[]): MultiplyValues => {
-  if (args.length < 4) throw new Error("Not enough arguments");
+  if (args.length < 4) throw new Error("parameters missing");
 
-  let dehTemp: number[];
-  dehTemp = [];
+  //let dehTemp: number[];
+  //dehTemp = [];
+  const dehTemp: number[] = [];
 
   args.forEach((val, i) => {
     if (i > 2) {
       if (!isNaN(Number(val))) {
         dehTemp.push(Number(val));
       } else {
-        throw new Error("Provided values were not numbers!");
+        throw new Error("malformatted parameters");
       }
     }
   });
@@ -28,7 +29,7 @@ export const parseManyArguments = (args: string[]): MultiplyValues => {
       dailyExerciseHours: dehTemp,
     };
   } else {
-    throw new Error("Provided values were not numbers!");
+    throw new Error("malformatted parameters");
   }
 };
 
@@ -42,7 +43,7 @@ interface ReturnValues {
   average: number;
 }
 
-const calculateExercises = (
+export const calculateExercises = (
   dailyExerciseHours: number[],
   targetAmount: number
 ): ReturnValues => {
@@ -62,7 +63,7 @@ const calculateExercises = (
   let trainingSuccess = false;
   let ratingDescription = "";
   let rating = 0;
-  let puoletTavoitteesta = targetAmount / 2;
+  const puoletTavoitteesta = targetAmount / 2;
 
   switch (true) {
     case trainingHoursAvg >= targetAmount: {
