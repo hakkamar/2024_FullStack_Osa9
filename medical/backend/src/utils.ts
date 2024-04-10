@@ -1,4 +1,4 @@
-import { NewPatientEntry, Gender } from "./types";
+import { NewPatientEntry, Gender, Entry } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -48,6 +48,23 @@ const parseOccupation = (occupation: unknown): string => {
   }
   return occupation;
 };
+const parseEntries = (entries: unknown): Entry => {
+  //
+  //  Tämä jatkettava loppuun - mallia Genderistä?
+  console.log("parseEntries loppuun");
+  console.log("entries", entries);
+  //
+  //
+  let joku: Entry = [];
+
+  //  if (!isString(entries) || !isEntry(entries)) {
+  //    throw new Error("Incorrect gender: " + entries);
+  //  }
+
+  //console.log(entries.join(", "));
+
+  return joku;
+};
 
 const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   if (!object || typeof object !== "object") {
@@ -59,7 +76,8 @@ const toNewPatientEntry = (object: unknown): NewPatientEntry => {
     "dateOfBirth" in object &&
     "ssn" in object &&
     "gender" in object &&
-    "occupation" in object
+    "occupation" in object &&
+    "entries" in object
   ) {
     const newEntry: NewPatientEntry = {
       name: parseName(object.name),
@@ -67,6 +85,7 @@ const toNewPatientEntry = (object: unknown): NewPatientEntry => {
       ssn: parseSsn(object.ssn),
       gender: parseGender(object.gender),
       occupation: parseOccupation(object.occupation),
+      entries: parseEntries(object.entries),
     };
     return newEntry;
   }

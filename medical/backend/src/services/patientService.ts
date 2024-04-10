@@ -7,17 +7,21 @@ import { v1 as uuidv1 } from "uuid";
 const patients: Patient[] = patientData;
 
 const getEntries = (): Patient[] => {
+  //console.log("patients", patients);
   return patients;
 };
 
 const getNonSensitivePatientEntries = (): NonSensitivePatientEntry[] => {
-  return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
-    id,
-    name,
-    dateOfBirth,
-    gender,
-    occupation,
-  }));
+  return patients.map(
+    ({ id, name, dateOfBirth, gender, occupation, entries }) => ({
+      id,
+      name,
+      dateOfBirth,
+      gender,
+      occupation,
+      entries,
+    })
+  );
 };
 
 const findById = (id: string): Patient | undefined => {

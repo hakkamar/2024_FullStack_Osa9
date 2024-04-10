@@ -6,11 +6,15 @@ const router = express.Router();
 
 router.get("/", (_req, res) => {
   console.log("someone wants patients");
-  res.json(patientService.getNonSensitivePatientEntries());
+  //res.json(patientService.getNonSensitivePatientEntries());
+  res.json(patientService.getEntries());
 });
 
 router.get("/:id", (req, res) => {
+  console.log("someone wants patient with ID ", req.params.id);
   const patient = patientService.findById(req.params.id);
+
+  //console.log("patient", patient);
 
   if (patient) {
     res.send(patient);
