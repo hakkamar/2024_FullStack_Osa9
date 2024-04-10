@@ -1,4 +1,4 @@
-import { NewPatientEntry, Gender, Entry } from "./types";
+import { NewPatientEntry, Gender, Entry, Type } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === "string" || text instanceof String;
@@ -48,22 +48,37 @@ const parseOccupation = (occupation: unknown): string => {
   }
   return occupation;
 };
+
+/*
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis["code"]> => {
+  if (!object || typeof object !== "object" || !("diagnosisCodes" in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis["code"]>;
+  }
+  return object.diagnosisCodes as Array<Diagnosis["code"]>;
+};
+*/
+
 const parseEntries = (entries: unknown): Entry => {
-  //
-  //  Tämä jatkettava loppuun - mallia Genderistä?
-  console.log("parseEntries loppuun");
-  console.log("entries", entries);
-  //
-  //
-  let joku: Entry = [];
+  if (!entries || typeof entries !== "object") {
+    // we will just trust the data to be in correct form
+    return [] as unknown as Entry;
+  }
 
-  //  if (!isString(entries) || !isEntry(entries)) {
-  //    throw new Error("Incorrect gender: " + entries);
-  //  }
-
-  //console.log(entries.join(", "));
-
-  return joku;
+  let merkinta = Object.values(entries);
+  for (let index = 0; index < merkinta.length; index++) {
+    // tarkastetaan vain tyyppi
+    if (
+      !Object.values(Type)
+        .map((t) => t.toString())
+        .includes(merkinta[index].type)
+    ) {
+      throw new Error(
+        "Incorrect or missing type in etries: " + merkinta[index].type
+      );
+    }
+  }
+  return entries as Entry;
 };
 
 const toNewPatientEntry = (object: unknown): NewPatientEntry => {
