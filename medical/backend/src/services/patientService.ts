@@ -35,20 +35,16 @@ const findById = (id: string): Patient | undefined => {
 };
 
 const addPatient = (entry: NewPatientEntry): Patient => {
-  console.log("addPatient");
-  console.log("----------------");
-  console.log("entry", entry);
   const newPatient = {
     id: uuidv1(),
     ...entry,
   };
 
   patients.push(newPatient);
-  console.log("----------------");
   return newPatient;
 };
 
-const addPatientsEntry = (entry: EntryWithoutId, id: string): Entry => {
+const addPatientsEntry = (entry: EntryWithoutId, id: string): Patient => {
   const newEntry = {
     id: uuidv1(),
     ...entry,
@@ -68,9 +64,9 @@ const addPatientsEntry = (entry: EntryWithoutId, id: string): Entry => {
     };
     patients.map((p) => (p.id === updatedPatient.id ? updatedPatient : p));
 
-    return newEntry;
+    return updatedPatient;
   } else {
-    return {} as Entry;
+    return {} as Patient;
   }
 };
 

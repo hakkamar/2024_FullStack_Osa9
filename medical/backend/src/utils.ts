@@ -107,29 +107,33 @@ const parseType = (type: unknown): Type => {
 };
 
 const parseDescription = (description: unknown): string => {
-  if (!isString(description)) {
+  if (!isString(description) || description.length === 0) {
     throw new Error("Incorrect or missing description");
   }
   return description;
 };
 
 const parseDate = (date: unknown): string => {
-  if (!isString(date)) {
+  if (!isString(date) || date.length === 0) {
     throw new Error("Incorrect or missing date");
   }
   return date;
 };
 
 const parseSpecialist = (specialist: unknown): string => {
-  if (!isString(specialist)) {
+  if (!isString(specialist) || specialist.length === 0) {
     throw new Error("Incorrect or missing specialist");
   }
   return specialist;
 };
 
 const parseDischarge = (discharge: Discharge): Discharge => {
-  if (!discharge) {
-    throw new Error("Incorrect or missing discharge");
+  if (
+    !discharge ||
+    discharge.date.length === 0 ||
+    discharge.criteria.length === 0
+  ) {
+    throw new Error("Incorrect or missing discharge data");
   }
   return discharge;
 };
@@ -150,7 +154,7 @@ const parseHealthCheckRating = (
 };
 
 const parseEmployerName = (employerName: unknown): string => {
-  if (!isString(employerName)) {
+  if (!isString(employerName) || employerName.length === 0) {
     throw new Error("Incorrect or missing employerName");
   }
   return employerName;
@@ -175,7 +179,7 @@ export const toNewEntryEntry = (object: EntryWithoutId): EntryWithoutId => {
     "specialist" in object
   ) {
     switch (parseType(object.type)) {
-      case "Hospital":
+      case Type.Hospital:
         if ("discharge" in object) {
           const newHospitalEntry: EntryWithoutId = {
             type: "Hospital",
@@ -189,7 +193,7 @@ export const toNewEntryEntry = (object: EntryWithoutId): EntryWithoutId => {
         }
         throw new Error("Incorrect data: a field missing");
 
-      case "HealthCheck":
+      case Type.HealthCheck:
         if ("healthCheckRating" in object) {
           const newHealthCheckEntry: EntryWithoutId = {
             type: "HealthCheck",
@@ -203,7 +207,7 @@ export const toNewEntryEntry = (object: EntryWithoutId): EntryWithoutId => {
         }
         throw new Error("Incorrect data: a field missing");
 
-      case "OccupationalHealthcare":
+      case Type.OccupationalHealthcare:
         if ("employerName" in object) {
           const newOccupationalHealthcareEntry: EntryWithoutId = {
             type: "OccupationalHealthcare",

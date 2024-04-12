@@ -9,14 +9,17 @@ import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Button } from "@mui/material";
 
-import { Diagnosis, Entry, Patient } from "../../types";
+import { Diagnosis, Entry, EntryWithoutId, Patient, Type } from "../../types";
 import diagnosisService from "../../services/diagnosis";
 import patientService from "../../services/patients";
+import AddEntryModal from "../AddEntryModal";
+import axios from "axios";
 
 let genderIcon = TransgenderIcon;
 
 const PatientPage = () => {
   const [diagnosis, setDiagnosis] = useState<Diagnosis[]>([]);
+  //const [patient, setPatient] = useState<Patient>({} as Patient);
   const [patient, setPatient] = useState<Patient>({
     id: "",
     name: "",
@@ -26,6 +29,16 @@ const PatientPage = () => {
     occupation: "",
     entries: [],
   });
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
 
   useEffect(() => {
     const fetchDiagnosisList = async () => {
@@ -45,6 +58,41 @@ const PatientPage = () => {
     };
     void fetchPatient();
   }, [match]);
+
+  const submitNewEntry = async (values: EntryWithoutId) => {
+    if (match) {
+      const iiDee = match.params.id;
+      if (iiDee) {
+        try {
+          const patientWithNewEntry = await patientService.createEntry(
+            values,
+            iiDee
+          );
+          setPatient(patientWithNewEntry);
+          setModalOpen(false);
+          setError(undefined);
+        } catch (e: unknown) {
+          if (axios.isAxiosError(e)) {
+            if (e?.response?.data && typeof e?.response?.data === "string") {
+              const message = e.response.data.replace(
+                "Something went wrong. Error: ",
+                ""
+              );
+              console.error(message);
+              setError(message);
+            } else {
+              setError("Unrecognized axios error");
+            }
+          } else {
+            console.error("Unknown error", e);
+            setError("Unknown error");
+          }
+        }
+      } else {
+        console.log("no piru perkele, ei ole iideetä, miten se on mahdollista");
+      }
+    }
+  };
 
   if (!patient) {
     return <div>ei löydy?</div>;
@@ -91,7 +139,7 @@ const PatientPage = () => {
     let result = "";
     const nimi = diagnosis.find((diag) => diag.code === d);
     if (nimi?.latin) {
-      result = nimi?.name + " ( lat: " + nimi?.latin + ")";
+      result = nimi?.name + " ( lat: " + nimi?.latin + " )";
     } else {
       if (nimi?.name) {
         result = nimi?.name;
@@ -110,7 +158,7 @@ const PatientPage = () => {
 
   function entryDetails(entry: Entry): ReactNode {
     switch (entry.type) {
-      case "Hospital":
+      case Type.Hospital:
         return (
           <ul key={entry.id}>
             <hr></hr>
@@ -132,7 +180,7 @@ const PatientPage = () => {
             )}
           </ul>
         );
-      case "OccupationalHealthcare":
+      case Type.OccupationalHealthcare:
         return (
           <ul key={entry.id}>
             <hr></hr>
@@ -158,7 +206,7 @@ const PatientPage = () => {
             )}
           </ul>
         );
-      case "HealthCheck":
+      case Type.HealthCheck:
         return (
           <ul key={entry.id}>
             <hr></hr>
@@ -191,12 +239,18 @@ const PatientPage = () => {
       <p>date of birth: {patient.dateOfBirth}</p>
       <p>ssn: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button variant="contained" onClick={() => openModal()}>
+        Add New Entry
+      </Button>
       <h3>entries</h3>
       {Object.values(merkinta).map((m) => entryDetails(m))}
       <hr></hr>
-      <Button variant="contained" onClick={() => alert("Soon to be released")}>
-        Add New Patient
-      </Button>
     </div>
   );
 };

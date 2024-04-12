@@ -21,12 +21,13 @@ router.get("/:id", (req, res) => {
   }
 });
 
-router.post("/:id/entries", (req, res) => {
+router.post("/:id/entries", (_req, res) => {
   try {
-    const newPatientEntryEntry = toNewEntryEntry(req.body);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const newPatientEntryEntry = toNewEntryEntry(_req.body);
     const addedEntry = patientService.addPatientsEntry(
       newPatientEntryEntry,
-      req.params.id
+      _req.params.id
     );
     res.json(addedEntry);
   } catch (error: unknown) {
