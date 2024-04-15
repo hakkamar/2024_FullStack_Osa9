@@ -20,21 +20,15 @@ import {
 interface Props {
   onCancel: () => void;
   onSubmit: (values: EntryWithoutId) => void;
+  diagnosis: Diagnosis[];
 }
 
-interface HealthCheckRatingOption {
-  value: HealthCheckRating;
-  label: string;
-}
-
-const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.values(
-  HealthCheckRating
-).map((v) => ({
-  value: v,
-  label: v.toString(),
-}));
-// tulee jostain syystää valikkoon myös tekstit, joten siivotaan ne toistaiseksi näin....
-healthCheckRatingOptions.splice(0, 4);
+const healthCheckRatingOptions = [
+  { value: HealthCheckRating.Healthy, label: "Healthy" },
+  { value: HealthCheckRating.LowRisk, label: "LowRisk" },
+  { value: HealthCheckRating.HighRisk, label: "HighRisk" },
+  { value: HealthCheckRating.CriticalRisk, label: "CriticalRisk" },
+];
 
 interface TypeOption {
   value: Type;
@@ -46,7 +40,7 @@ const typeOptions: TypeOption[] = Object.values(Type).map((v) => ({
   label: v.toString(),
 }));
 
-const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
+const AddEntryForm = ({ onCancel, onSubmit, diagnosis }: Props) => {
   const [type, setType] = useState(Type.HealthCheck);
   const [description, setDescription] = useState("");
   const [specialist, setSpecialist] = useState("");
@@ -66,6 +60,18 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const [valittuKoodi, setValittuKoodi] = useState("");
+
+  interface KoodiOption {
+    value: string;
+    label: string;
+  }
+
+  const koodiOptions: KoodiOption[] = diagnosis.map((v) => ({
+    value: v.code,
+    label: v.code,
+  }));
+
   const onHealthCheckRatingChange = (event: SelectChangeEvent<number>) => {
     event.preventDefault();
     if (typeof event.target.value === "number") {
@@ -75,6 +81,17 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
       );
       if (healthCheckRating) {
         setHealthCheckRating(Number(healthCheckRating));
+      }
+    }
+  };
+
+  const onKoodiChange = (event: SelectChangeEvent<string>) => {
+    event.preventDefault();
+    if (typeof event.target.value === "string") {
+      const value = event.target.value;
+      if (value) {
+        setValittuKoodi(value);
+        setDiagnosisCodes(diagnosisCodes.concat(value));
       }
     }
   };
@@ -103,7 +120,6 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           date,
           healthCheckRating,
         };
-
         onSubmit(newHealthCheckEntry);
         break;
       case Type.Hospital:
@@ -115,7 +131,6 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           date,
           discharge: { date: dischargeDate, criteria: criteria },
         };
-
         onSubmit(newHospitalEntry);
         break;
       case Type.OccupationalHealthcare:
@@ -159,21 +174,29 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           value={specialist}
           onChange={({ target }) => setSpecialist(target.value)}
         />
+        <InputLabel style={{ marginTop: 20 }}>Date</InputLabel>
         <TextField
-          label="Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
+          name="date"
+          placeholder="MM/DD/YYYY"
           fullWidth
           value={date}
           onChange={({ target }) => setDate(target.value)}
         />
-        <TextField
+        <InputLabel style={{ marginTop: 20 }}>Diagnosis Codes</InputLabel>
+        <Select
           label="Diagnosis Codes"
           fullWidth
-          value={diagnosisCodes}
-          onChange={({ target }) =>
-            setDiagnosisCodes(diagnosisCodes.concat(target.value))
-          }
-        />
+          value={valittuKoodi}
+          onChange={onKoodiChange}
+        >
+          {koodiOptions.map((option) => (
+            <MenuItem key={option.label} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+        {diagnosisCodes.map((dg) => dg + ", ")}
         {type === Type.HealthCheck ? (
           <div>
             <InputLabel style={{ marginTop: 20 }}>HealthCheckRating</InputLabel>
@@ -194,9 +217,11 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
 
         {type === Type.Hospital ? (
           <div>
+            <InputLabel style={{ marginTop: 20 }}>Discharge Date</InputLabel>
             <TextField
-              label="Discharge Date"
-              placeholder="YYYY-MM-DD"
+              type="date"
+              name="dischargeDate"
+              placeholder="MM/DD/YYYY"
               fullWidth
               value={dischargeDate}
               onChange={({ target }) => setDischargeDate(target.value)}
@@ -218,16 +243,25 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
               value={employerName}
               onChange={({ target }) => setEmployerName(target.value)}
             />
+
+            <InputLabel style={{ marginTop: 20 }}>
+              Sickleave Start Date
+            </InputLabel>
             <TextField
-              label="Sickleave Start Date"
-              placeholder="YYYY-MM-DD"
+              type="date"
+              name="sickleaveStartDate"
+              placeholder="MM/DD/YYYY"
               fullWidth
               value={startDate}
               onChange={({ target }) => setStartDate(target.value)}
             />
+            <InputLabel style={{ marginTop: 20 }}>
+              Sickleave End Date
+            </InputLabel>
             <TextField
-              label="Sickleave End Date"
-              placeholder="YYYY-MM-DD"
+              type="date"
+              name="sickleaveEndDate"
+              placeholder="MM/DD/YYYY"
               fullWidth
               value={endDate}
               onChange={({ target }) => setEndDate(target.value)}

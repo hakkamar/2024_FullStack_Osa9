@@ -244,6 +244,7 @@ const PatientPage = () => {
         onSubmit={submitNewEntry}
         error={error}
         onClose={closeModal}
+        diagnosis={diagnosis}
       />
       <Button variant="contained" onClick={() => openModal()}>
         Add New Entry
